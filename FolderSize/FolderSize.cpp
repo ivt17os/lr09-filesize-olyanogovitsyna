@@ -23,8 +23,6 @@ void dfs() {
     hFind = FindFirstFile(L"*", &res);   // найти первый файл
  
     do {
-        count++; // некоторые файлы не считаются??
-        _tprintf(TEXT("file #%d is <%s>\n"), count, res.cFileName);
  
 		if ((res.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0 
 			&& _tcscmp(res.cFileName, TEXT("..")) != 0 
@@ -34,8 +32,15 @@ void dfs() {
 				SetCurrentDirectory(TEXT(".."));
 			//	çäåñü áóäåò îáõîä â ãëóáèíó
 		}
-        else {// это файл
-			size+=res.nFileSizeLow + res.nFileSizeHigh << 32;
+		else if(!(res.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY)){// это файл
+		count++; // некоторые файлы не считаются??
+			long long filesize;
+			filesize = res.nFileSizeHigh;
+			filesize = filesize << 32;
+			filesize = filesize + res.nFileSizeLow;
+			size+=filesize;
+			_tprintf(TEXT("file #%d is <%s>\n"), count, res.cFileName);
+ 
          }
     } while (FindNextFile(hFind, &res) != 0);
     FindClose(hFind);
